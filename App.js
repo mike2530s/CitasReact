@@ -1,61 +1,51 @@
-import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
-import { 
-  StyleSheet, Text, SafeAreaView, Pressable, 
-  Platform, StatusBar as RNStatusBar, Modal, View
-} from 'react-native';
+import { StatusBar } from 'expo-status-bar'
+import { useState } from 'react'
+import {
+  StyleSheet, Text, SafeAreaView, Pressable,
+  Platform, StatusBar as RNStatusBar
+} from 'react-native'
+import Formulario from './src/components/Formulario'
 
 export default function App() {
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false)
+  const [pacientes, setPacientes] = useState([])
 
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.titulo}>Administrador de citas</Text>
       <Text style={styles.tituloBold}>Veterinaria</Text>
 
-      <Pressable 
+      <Pressable
         style={styles.btnNuevaCita}
         onPress={() => setModalVisible(true)}
       >
-        <Text style={styles.btnTextoNuevaCita}>
-          Nueva cita
-        </Text>
+        <Text style={styles.btnTextoNuevaCita}>Nueva cita</Text>
       </Pressable>
 
-      <Modal
-        visible={modalVisible}
-        animationType="slide"
-      >
-        <View style={styles.modalContenido}>
-          <Text>Este es un modal</Text>
+      {/* Formulario en componente separado */}
+      <Formulario
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        pacientes={pacientes}
+        setPacientes={setPacientes}
+      />
 
-          <Pressable 
-            style={styles.btnNuevaCita}
-            onPress={() => setModalVisible(false)}
-          >
-            <Text style={styles.btnTextoNuevaCita}>
-              Cerrar
-            </Text>
-          </Pressable>
-
-        </View>
-      </Modal>
-
+      <StatusBar style="auto" />
     </SafeAreaView>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#F3F4F6',
     flex: 1,
-    paddingTop: Platform.OS === 'android' ? RNStatusBar.currentHeight : 0
+    paddingTop: Platform.OS === 'android' ? RNStatusBar.currentHeight : 0,
   },
   titulo: {
     textAlign: 'center',
     fontSize: 30,
     color: '#374151',
-    fontWeight: '600'
+    fontWeight: '600',
   },
   tituloBold: {
     fontWeight: '900',
@@ -67,28 +57,13 @@ const styles = StyleSheet.create({
     padding: 15,
     marginTop: 30,
     marginHorizontal: 20,
-    borderRadius: 10
+    borderRadius: 10,
   },
   btnTextoNuevaCita: {
     textAlign: 'center',
     color: '#FFF',
     fontSize: 18,
     fontWeight: '900',
-    textTransform: 'uppercase'
+    textTransform: 'uppercase',
   },
-  modalContenido: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  noPacientes: {
-    marginTop: 40,
-    textAlign: 'center',
-    fontSize: 24,
-    fontWeight: '600'
-  },
-  listado: {
-    marginTop: 50,
-    marginHorizontal: 30
-  }
-});
+})
