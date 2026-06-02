@@ -1,34 +1,42 @@
 import { StatusBar } from 'expo-status-bar'
 import { useState } from 'react'
 import {
-  StyleSheet, Text, SafeAreaView, Pressable,
+  StyleSheet, Text, SafeAreaView, Pressable, ScrollView,
   Platform, StatusBar as RNStatusBar
 } from 'react-native'
 import Formulario from './src/components/Formulario'
 
 export default function App() {
   const [modalVisible, setModalVisible] = useState(false)
-  const [pacientes, setPacientes] = useState([])
+  const [pacientes, setPacientes]       = useState([])
+
+  const cerrarModal = () => {
+    setModalVisible(false)
+  }
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.titulo}>Administrador de citas</Text>
-      <Text style={styles.tituloBold}>Veterinaria</Text>
+      <ScrollView>
+        <Text style={styles.titulo}>
+          Administrador de Citas {''}
+          <Text style={styles.tituloBold}>Veterinaria</Text>
+        </Text>
 
-      <Pressable
-        style={styles.btnNuevaCita}
-        onPress={() => setModalVisible(true)}
-      >
-        <Text style={styles.btnTextoNuevaCita}>Nueva cita</Text>
-      </Pressable>
+        <Pressable
+          onLongPress={() => setModalVisible(true)}
+          delayLongPress={1000}
+          style={styles.btnNuevaCita}
+        >
+          <Text style={styles.btnTextoNuevaCita}>Nueva cita</Text>
+        </Pressable>
 
-      {/* Formulario en componente separado */}
-      <Formulario
-        modalVisible={modalVisible}
-        setModalVisible={setModalVisible}
-        pacientes={pacientes}
-        setPacientes={setPacientes}
-      />
+        <Formulario
+          modalVisible={modalVisible}
+          cerrarModal={cerrarModal}
+          pacientes={pacientes}
+          setPacientes={setPacientes}
+        />
+      </ScrollView>
 
       <StatusBar style="auto" />
     </SafeAreaView>
