@@ -1,14 +1,17 @@
 import { StatusBar } from 'expo-status-bar'
 import { useState } from 'react'
 import {
-  StyleSheet, Text, SafeAreaView, Pressable, ScrollView,
+  StyleSheet, Text, SafeAreaView, Pressable, FlatList,
   Platform, StatusBar as RNStatusBar
 } from 'react-native'
 import Formulario from './src/components/Formulario'
+import Paciente from './src/components/Paciente'
 
 export default function App() {
   const [modalVisible, setModalVisible] = useState(false)
-  const [pacientes, setPacientes]       = useState([])
+  const [pacientes, setPacientes] = useState([])
+  const [paciente, setPaciente] = useState({})
+  const [modalPaciente, setModalPaciente] = useState(false)
 
   const cerrarModal = () => {
     setModalVisible(false)
@@ -16,27 +19,45 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
-        <Text style={styles.titulo}>
-          Administrador de Citas {''}
-          <Text style={styles.tituloBold}>Veterinaria</Text>
-        </Text>
+      <Text style={styles.titulo}>
+        Administrador de Citas {''}
+        <Text style={styles.tituloBold}>Veterinaria</Text>
+      </Text>
 
-        <Pressable
-          onLongPress={() => setModalVisible(true)}
-          delayLongPress={1000}
-          style={styles.btnNuevaCita}
-        >
-          <Text style={styles.btnTextoNuevaCita}>Nueva cita</Text>
-        </Pressable>
+      <Pressable
+        onLongPress={() => setModalVisible(true)}
+        delayLongPress={1000}
+        style={styles.btnNuevaCita}
+      >
+        <Text style={styles.btnTextoNuevaCita}>Nueva cita</Text>
+      </Pressable>
 
-        <Formulario
-          modalVisible={modalVisible}
-          cerrarModal={cerrarModal}
-          pacientes={pacientes}
-          setPacientes={setPacientes}
+      {pacientes.length === 0 ? (
+        <Text style={styles.noPacientes}>No hay pacientes aun</Text>
+      ) : (
+        <FlatList
+          style={styles.listado}
+          data={pacientes}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => {
+            return (
+              <Paciente
+                item={item}
+                setModalVisible={setModalVisible}
+                setPaciente={setPaciente}
+                setModalPaciente={setModalPaciente}
+              />
+            )
+          }}
         />
-      </ScrollView>
+      )}
+
+      <Formulario
+        modalVisible={modalVisible}
+        cerrarModal={cerrarModal}
+        pacientes={pacientes}
+        setPacientes={setPacientes}
+      />
 
       <StatusBar style="auto" />
     </SafeAreaView>
@@ -54,6 +75,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
     color: '#374151',
     fontWeight: '600',
+    marginTop: 20,
   },
   tituloBold: {
     fontWeight: '900',
@@ -74,4 +96,14 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     textTransform: 'uppercase',
   },
+  noPacientes: {
+    marginTop: 40,
+    textAlign: 'center',
+    fontSize: 24,
+    fontWeight: '600'
+  },
+  listado: {
+    marginTop: 50,
+    marginHorizontal: 30
+  }
 })

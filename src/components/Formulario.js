@@ -1,16 +1,30 @@
-import { View, Text, Pressable, Modal, SafeAreaView, ScrollView, 
-         TextInput, StyleSheet, Alert } from 'react-native'
+import {
+  View, Text, Pressable, Modal, SafeAreaView, ScrollView,
+  TextInput, StyleSheet, Alert,
+} from 'react-native'
 import { useState } from 'react'
+import DatePicker from 'react-native-modern-datepicker'
 
 const Formulario = ({ cerrarModal, modalVisible, pacientes, setPacientes }) => {
-
-  const [id, setId]                   = useState('')
-  const [paciente, setPaciente]       = useState('')
+  const [id, setId] = useState('')
+  const [paciente, setPaciente] = useState('')
   const [propietario, setPropietario] = useState('')
-  const [email, setEmail]             = useState('')
-  const [telefono, setTelefono]       = useState('')
-  const [fecha, setFecha]             = useState('')
-  const [sintomas, setSintomas]       = useState('')
+  const [email, setEmail] = useState('')
+  const [telefono, setTelefono] = useState('')
+  const [fecha, setFecha] = useState('')
+  const [sintomas, setSintomas] = useState('')
+  const [showPicker, setShowPicker] = useState(false)
+
+  const limpiarFormulario = () => {
+    setId('')
+    setPaciente('')
+    setPropietario('')
+    setEmail('')
+    setTelefono('')
+    setFecha('')
+    setSintomas('')
+    cerrarModal()
+  }
 
   const handleCita = () => {
     if ([paciente, propietario, email, telefono, fecha, sintomas].includes('')) {
@@ -29,8 +43,8 @@ const Formulario = ({ cerrarModal, modalVisible, pacientes, setPacientes }) => {
 
     if (id) {
       nuevoPaciente.id = id
-      const pacientesActualizados = pacientes.map( pacienteState => 
-        pacienteState.id === nuevoPaciente.id ? nuevoPaciente : pacienteState 
+      const pacientesActualizados = pacientes.map(pacienteState =>
+        pacienteState.id === nuevoPaciente.id ? nuevoPaciente : pacienteState
       )
       setPacientes(pacientesActualizados)
     } else {
@@ -38,29 +52,20 @@ const Formulario = ({ cerrarModal, modalVisible, pacientes, setPacientes }) => {
       setPacientes([...pacientes, nuevoPaciente])
     }
 
-    setId('')
-    setPaciente('')
-    setPropietario('')
-    setEmail('')
-    setTelefono('')
-    setFecha('')
-    setSintomas('')
-
-    cerrarModal()
+    limpiarFormulario()
   }
 
   return (
-    <Modal 
-      visible={modalVisible} 
+    <Modal
+      visible={modalVisible}
       animationType="slide"
       statusBarTranslucent={true}
     >
       <SafeAreaView style={styles.formulario}>
-        <ScrollView>
-
+        <ScrollView keyboardShouldPersistTaps="always">
           <Text style={styles.titulo}>Nueva Cita</Text>
 
-          <Pressable style={styles.btnCancelar} onPress={cerrarModal}>
+          <Pressable style={styles.btnCancelar} onPress={limpiarFormulario}>
             <Text style={styles.btnCancelarTexto}> X Cancelar</Text>
           </Pressable>
 
@@ -92,8 +97,15 @@ const Formulario = ({ cerrarModal, modalVisible, pacientes, setPacientes }) => {
 
           <View style={styles.campo}>
             <Text style={styles.label}>Fecha</Text>
-            <TextInput style={styles.input} placeholder="Fecha"
-              placeholderTextColor={"#666"} value={fecha} onChangeText={setFecha} />
+            <Pressable
+              style={styles.inputPicker}
+              onPress={() => setShowPicker(true)}
+            >
+              <Text style={[styles.inputText, !fecha && styles.placeholderText]}>
+                {fecha ? fecha : "Selecciona Fecha..."}
+              </Text>
+              <Text style={styles.iconoCalendario}>📅</Text>
+            </Pressable>
           </View>
 
           <View style={styles.campo}>
@@ -106,8 +118,29 @@ const Formulario = ({ cerrarModal, modalVisible, pacientes, setPacientes }) => {
           <Pressable style={styles.btnNuevaCita} onPress={handleCita}>
             <Text style={styles.btnNuevaCitaTexto}>Guardar</Text>
           </Pressable>
-
         </ScrollView>
+
+        {showPicker && (
+          <View style={styles.overlay}>
+            <View style={styles.pickerWrapper}>
+              <DatePicker
+                isGregorian={true}
+                options={{
+                  backgroundColor: '#FFF',
+                  textHeaderColor: '#6D28D9',
+                  textDefaultColor: '#000',
+                  selectedTextColor: '#FFF',
+                  mainColor: '#6D28D9',
+                  textSecondaryColor: '#666',
+                }}
+                onDateChange={date => {
+                  setFecha(date)
+                  setShowPicker(false)
+                }}
+              />
+            </View>
+          </View>
+        )}
       </SafeAreaView>
     </Modal>
   )
@@ -171,6 +204,36 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     fontSize: 16,
     textTransform: "uppercase",
+  },
+  inputPicker: {
+    backgroundColor: "#FFF",
+    padding: 15,
+    borderRadius: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  inputText: {
+    fontSize: 16,
+    color: "#000",
+  },
+  placeholderText: {
+    color: "#666",
+  },
+  iconoCalendario: {
+    fontSize: 18,
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0, left: 0, right: 0, bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  pickerWrapper: {
+    borderRadius: 10,
+    overflow: 'hidden',
+    width: '90%',
   },
 });
 
